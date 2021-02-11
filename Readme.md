@@ -22,12 +22,16 @@ So, let's get started and start building it:
 
 1) **Create React app:**
 
+Run these commands on the terminal to create new React app:
+
 ````bash
 npx create-react-app nodemailer-form
 cd nodemailer-form
 ````
 
 2) **Add [Material UI](https://material-ui.com/):**
+
+To install Material UI dependancies, run this:
 
 ````bash
 npm install @material-ui/core
@@ -38,7 +42,7 @@ Please note that [react](https://www.npmjs.com/package/react) >= 16.8.0 and [rea
 
 Material UI provides us with already styled React component we can use straight away, and they implement [Material](https://material.io/design/introduction), a design system created by Google to help teams build high-quality digital experiences for Android, iOS, Flutter, and the web.
 
-In other words, using Material UI is gonna gives an App-like look to our form ;)
+In other words, using Material UI is gonna give us an App-like look to our form ;)
 
 3) **Add Roboto Font:**
 
@@ -402,7 +406,7 @@ const fakeCloudFunction = (data) => {
 
 In the next section we're gonna add the real cloud function that actually sends and email with the data we provide in the form.
 
-If you feel overwelmed by the length and complexity of the `App.js` React component containing the form, take a look a this Academind course: [React: The Complete Guide](https://pro.academind.com/p/react-the-complete-guide-incl-hooks-react-router-redux). The form code was copied from there, and it's explained step by step.
+If you feel overwelmed by the length and complexity of the `App.js` React component containing the form, take a look a this Academind course: [React - The Complete Guide (incl Hooks, React Router, Redux)](https://pro.academind.com/p/react-the-complete-guide-incl-hooks-react-router-redux). The form code was copied from there, and it's explained step by step.
 
 5) **Test the form:**
 
@@ -447,7 +451,7 @@ const submitForm = () => {
 }
 ````
 
-Then, we know that if the honeypot field was filled, that was a bot, and we handle the submission of the form in a different way, by doing nothing.
+Then, we know that if the honeypot field was filled, that was a done by a bot, and we handle the submission of the form in a different way, by doing nothing and avoiding calling the cloud function.
 
 So, in order to test the honeypot, just change the `contactForm` state by swaping `contactForm.honeypot.value` from `''` to a number like `1` or a string `hey, I am bot who filled this form!`.
 
@@ -463,31 +467,306 @@ Great! Now we have a form already working and manually tested! Let's now replace
 
 #### What are they?
 
-Cloud Functions for Firebase is a serverless framework that lets you automatically run backend code in response to events triggered by Firebase features and HTTPS requests. 
+**Cloud Functions for Firebase** is a **serverless framework** that lets you automatically run backend code in response to events triggered by Firebase features and HTTPS requests. 
 
 Your JavaScript or TypeScript code is stored in Google's cloud and runs in a managed environment. There's no need to manage and scale your own servers.
 
 To know more about them, read the [docs](https://firebase.google.com/docs/functions).
 
-#### Let's write one!
+If you wanna know more about **serverless**, you check out this Academind course: [AWS Serverless APIs & Apps - A Complete Introduction](https://pro.academind.com/p/aws-serverless-apis-apps-a-complete-introduction).
+
+
+
+#### Cloud function setup time!
 
 Follow these steps to write your first cloud function:
 
 1) **Create a firebase project:**
 
-In the [Firebase console](https://console.firebase.google.com/), click **Add project**, then select or enter a **Project name**.
+In the [Firebase console](https://console.firebase.google.com/), click **Add project**, then select or enter a **Project name**. You could name it `nodemailer form`, but feel free to choose something different.
 
 If you wanna use an already existing project, [follow these instructions](https://firebase.google.com/docs/functions/get-started).
 
 2) **Install the Firebase CLI:**
 
-This installs the globally available firebase command. If the command fails, you may need to [change npm permissions](https://docs.npmjs.com/getting-started/fixing-npm-permissions). Type the following on the your terminal:
+Run the following on the your terminal:
 
 ````bash
 npm install -g firebase-tools
 ````
 
+This installs the globally available firebase command. If the command fails, you may need to [change npm permissions](https://docs.npmjs.com/getting-started/fixing-npm-permissions). 
+
 3) **Initialize your project:**
+
+   a) Run
+
+````bash
+firebase login
+````
+
+ to log in via the browser and authenticate the firebase tool.
+
+  b) Initialize a firebase project by running:
+
+```bash
+firebase init
+```
+
+  c) You''ll be promted with this question:
+
+````bash
+? Which Firebase CLI features do you want to set up for this folder? Press Space to select features, then Enter to confirm your choic
+es. (Press <space> to select, <a> to toggle all, <i> to invert selection)
+❯◯ Database: Configure Firebase Realtime Database and deploy rules
+ ◯ Firestore: Deploy rules and create indexes for Firestore
+ ◯ Functions: Configure and deploy Cloud Functions
+ ◯ Hosting: Configure and deploy Firebase Hosting sites
+ ◯ Storage: Deploy Cloud Storage security rules
+ ◯ Emulators: Set up local emulators for Firebase features
+ ◯ Remote Config: Get, deploy, and rollback configurations for Remote Config
+````
+
+Let's choose this option:
+
+````bash
+ ❯◯ Functions: Configure and deploy Cloud Functions
+````
+
+  d) Then, youl'll be prompted with this:
+
+````bash
+=== Project Setup
+First, let's associate this project directory with a Firebase project. You can create multiple project aliases by running firebase use --add, but for now we'll just set up a default project.
+
+? Please select an option: (Use arrow keys)
+❯ Use an existing project 
+  Create a new project 
+  Add Firebase to an existing Google Cloud Platform project 
+  Don't set up a default project 
+````
+
+Choose this option:
+
+````bash
+❯ Use an existing project 
+````
+
+  e) We'll be asked which project and select the project you created on the step 1
+
+````bash
+? Select a default Firebase project for this directory: 
+❯ nodemailer-form-aadcf (nodemailer-form) 
+(...)
+````
+
+
+
+Then, we'll see this:
+
+````bash
+=== Functions Setup
+
+A functions directory will be created in your project with a Node.js
+package pre-configured. Functions can be deployed with firebase deploy.
+? What language would you like to use to write Cloud Functions? (Use arrow keys)
+❯ JavaScript 
+  TypeScript 
+````
+
+Let's choose:
+
+````bash
+❯ JavaScript 
+````
+
+  f) We're now asked about ESLint:
+
+````
+? Do you want to use ESLint to catch probable bugs and enforce style? (y/N)
+````
+
+Let's choose:
+
+````bash
+N
+````
+
+to make things easier.
+
+  g) At this point, some files have been created inside the new folder called `/functions`:
+
+````
+✔  Wrote functions/package.json
+✔  Wrote functions/index.js
+✔  Wrote functions/.gitignore
+? Do you want to install dependencies with npm now? (Y/n) 
+````
+
+We are asked about installing all the dependancies inside the `/functions` folder. Let's choose:
+
+````bash
+y
+````
+
+If all the set up process went well, we'll see this:
+
+````bash
+i  Writing configuration info to firebase.json...
+i  Writing project information to .firebaserc...
+
+✔  Firebase initialization complete!
+````
+
+  i) Lets install a couple more dependancies we're gonna need in our cloud function, but first make sure to navigate to `/functions`  with your terminal:
+
+````bash
+cd functions
+````
+
+Now, check that you are currently at `your-project-name/functions` by looking at the terminal. If you're not sure, just check it by running:
+
+````bash
+pwd
+````
+
+Now that your are sure you're inside at the right location, run this command to install nodemailer and cors modules:
+
+````bash
+npm i nodemailer cors
+````
+
+
+
+#### Let's finally write the cloud function
+
+All the cloud functions we wanna use must be exported from `/functions/index.js` file. As this project only has one function, let's define it and export it right in that file. 
+
+As a note, when you have multiple functions, it's better to create different files for them, and import & export them from `/functions/index.js`.
+
+To email is gonna be send using **[Nodemailer](https://nodemailer.com/about/)**, a module, that we're already installed, for Node.js applications to allow easy as cake email sending ;)
+
+So, let's write and export the cloud function in `/functions/index.js`:
+
+````javascript
+//functions/index.js
+
+//import needed modules
+const functions = require('firebase-functions');
+const nodemailer = require('nodemailer');
+
+//when this cloud function is already deployed, change the origin to 'https://your-deployed-app-origin
+const cors = require('cors')({origin: true});
+
+//create and config transporter
+let transporter = nodemailer.createTransport({
+    host: "your host",
+    port: your port number,
+    secure: true, // true for 465, false for other ports
+    auth: {
+        user: 'your user',
+        pass: 'your password'
+    }
+});
+
+//export the cloud function called sendEmail
+exports.sendEmail = functions.https.onRequest((req, res) => {
+    //for testing purposes
+    console.log("from sendEmail function. The request object is:", JSON.stringify(req.body));
+
+    //enable CORS using the `cors` express middleware.
+    cors(req, res, () => {
+        //get contact form data from the req and then assigned it to variables
+        const email = req.body.data.email;
+        const name = req.body.data.name;
+        const message = req.body.data.message;
+
+        //config the email message
+        const mailOptions = {
+            from: email,
+            to: `hi@munchjones.com`,
+            subject: 'New message the nodemailer-form article',
+            text:  `Sent by ${name} (${email}): ${message}`
+            
+        }
+
+        //call the built in sendMail function and return different responses upon success and failure
+        return transporter.sendMail(mailOptions, (error, info) => {
+            if(error){
+                return res.status(500).send({
+                    data:
+                    {
+                        "status": 500,
+                        "message": error.toString()
+                    }})
+                }
+            
+            return res.status(200).send( {
+                data:
+                {
+                    "status": 200,
+                    "message": "sent"
+            }});
+        });
+    });    
+});
+
+
+````
+
+We use the `cors()` middleware...but what's that for? It helps us to allow certain `URL` from where requests can be done to the cloud function. In the development phase, this config is used to let us call the function from any URL:
+
+````javascript
+const cors = require('cors')({origin: true});
+````
+
+The documentation for the **transporter configuration** can be checked [here](https://nodemailer.com/smtp/). In order to fill in the required fields, like `host`, `port` and `auth` , you need to go to your email provider and find them.
+
+The documentation for the **email message configuration** can be checked [here](), where you can find all the options available.
+
+Congratulations! You've just created your first cloud function!
+
+
+
+## Testing the cloud function running locally
+
+#### Starting a local emulator
+
+The moment of truth has come: it's time to see if our cloud functions works properly. Let's do it locally with a localemulator; run this in the terminal:
+
+````bash
+firebase emulators:start --only functions
+````
+
+After running the above command, we should be prompted with this:
+
+````bash
+✔  functions[sendEmail]: http function initialized (http://localhost:5001/your-project-name-xxxxx/server-location/sendEmail).
+````
+
+where `your-project-name` and `server-location` depends on how you set up the Firebase project at the step 1 of [Cloud function setup time!] section.
+
+To know know more about the local emulator, check this [docs.](https://firebase.google.com/docs/functions/local-emulator)
+
+
+
+#### Using Postman
+
+To test the cloud function running locally on `http://localhost:5001/your-project-name-xxxxx/server-location/sendEmail` , we're gonna open [Postman](https://www.postman.com/), which is a software that let us call endpoints and test them individually. You can download it [here](https://www.postman.com/downloads/).
+
+
+
+
+
+SMTP https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol
+
+The **Simple Mail Transfer Protocol** (**SMTP**) is a [communication protocol](https://en.wikipedia.org/wiki/Communication_protocol) for [electronic mail](https://en.wikipedia.org/wiki/Email) transmission.
+
+SMTP is the main transport in Nodemailer for delivering messages. SMTP is also the protocol used between different email hosts, so its truly universal.
+
+To know more about how to set up the transporter, click here https://nodemailer.com/smtp/
+
+Message config: https://nodemailer.com/message/
 
 
 
@@ -510,92 +789,6 @@ Using module bundlers
 https://firebase.google.com/docs/web/setup#using-module-bundlers
 
 
-
-1)  firebase install global tools
-
-
-
-2) Install the Firebase CLI via `npm` by running the following command:
-
-`````
-npm install -g firebase-tools
-`````
-
-3) 
-
-````
-firebase login
-````
-
-````
-firebase init
-````
-
-Choose:
-
-? Which Firebase CLI features do you want to set up for this folder? Press Space to select features, then Enter to confirm your choic
-es. (Press <space> to select, <a> to toggle all, <i> to invert selection)
-
-````
-Functions: Configure and deploy Cloud Functions
-````
-
-First, let's associate this project directory with a Firebase project.
-You can create multiple project aliases by running firebase use --add, 
-but for now we'll just set up a default project.
-
-? Please select an option: (Use arrow keys)
-
-````
-Use an existing project
-````
-
-
-
-? Select a default Firebase project for this directory: 
-
-````
-nodemailer-form
-````
-
-A functions directory will be created in your project with a Node.js
-package pre-configured. Functions can be deployed with firebase deploy.
-
-? What language would you like to use to write Cloud Functions?
-
-````
-JavaScript 
-````
-
- ? Do you want to use ESLint to catch probable bugs and enforce style? (y/N) 
-
-````
-N
-````
-
-The feedback is:
-
-✔  Wrote functions/package.json
-✔  Wrote functions/.eslintrc.js
-✔  Wrote functions/index.js
-✔  Wrote functions/.gitignore
-
-? Do you want to install dependencies with npm now? (Y/n) 
-
-```
-y
-```
-
-✔  Firebase initialization complete!
-
-
-
-Install nodemailer cors modules via npm:
-
-````
-cd functions
-npm i nodemailer cors
-````
 
 why cors? Without it, calling the function from the react app throws this error:
 
@@ -737,9 +930,11 @@ Function URL (sendEmail): https://us-central1-nodemailer-form-8fdf0.cloudfunctio
 
 Add a console.log(req) to the cloud function and pick it up from the log tab on firebase, for debugging purposes.
 
+Change cors config to specific URL
 
 
-## Testing the cloud function locally
+
+## 
 
 ## Deploying the cloud function
 
