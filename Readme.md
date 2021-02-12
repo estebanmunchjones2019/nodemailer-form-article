@@ -556,11 +556,11 @@ Choose this option:
 
 ````bash
 ? Select a default Firebase project for this directory: 
-❯ nodemailer-form-aadcf (nodemailer-form) 
+❯ {your-project-name-xxxxx} ({your-project-name}) 
 (...)
 ````
 
-
+Where `{your-project-name}` depends on how you named your project.
 
 Then, we'll see this:
 
@@ -664,8 +664,8 @@ let transporter = nodemailer.createTransport({
     port: your port number,
     secure: true, // true for 465, false for other ports
     auth: {
-        user: 'your user',
-        pass: 'your password'
+        user: 'your@email',
+        pass: 'your password.'
     }
 });
 
@@ -684,10 +684,9 @@ exports.sendEmail = functions.https.onRequest((req, res) => {
         //config the email message
         const mailOptions = {
             from: email,
-            to: `hi@munchjones.com`,
-            subject: 'New message the nodemailer-form article',
-            text:  `Sent by ${name} (${email}): ${message}`
-            
+            to: `your@email`,
+            subject: 'New message from the nodemailer-form app',
+            text:  `${name} says: ${message}`
         }
 
         //call the built in sendMail function and return different responses upon success and failure
@@ -710,6 +709,8 @@ exports.sendEmail = functions.https.onRequest((req, res) => {
         });
     });    
 });
+
+
 
 
 ````
@@ -741,7 +742,7 @@ firebase emulators:start --only functions
 After running the above command, we should be prompted with this:
 
 ````bash
-✔  functions[sendEmail]: http function initialized (http://localhost:5001/your-project-name-xxxxx/server-location/sendEmail).
+✔  functions[sendEmail]: http function initialized (http://localhost:5001/{your-project-name}/{server-location}/sendEmail).
 ````
 
 where `your-project-name` and `server-location` depends on how you set up the Firebase project at the step 1 of [Cloud function setup time!] section.
@@ -752,191 +753,246 @@ To know know more about the local emulator, check this [docs.](https://firebase.
 
 #### Using Postman
 
-To test the cloud function running locally on `http://localhost:5001/your-project-name-xxxxx/server-location/sendEmail` , we're gonna open [Postman](https://www.postman.com/), which is a software that let us call endpoints and test them individually. You can download it [here](https://www.postman.com/downloads/).
+To test the cloud function running locally on `http://localhost:5001/{your-project-name}/{server-location}/sendEmail` , we're gonna open [Postman](https://www.postman.com/), which is a software that let us call endpoints and test them individually. You can download it [here](https://www.postman.com/downloads/).
 
+Follow these steps to test the cloud function:
 
+![](./images/postman-1.png)
 
+![](./images/postman-2.png)
 
+![](./images/postman-3.png)
 
-SMTP https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol
+![](./images/postman-4.png)
 
-The **Simple Mail Transfer Protocol** (**SMTP**) is a [communication protocol](https://en.wikipedia.org/wiki/Communication_protocol) for [electronic mail](https://en.wikipedia.org/wiki/Email) transmission.
+![](./images/postman-5.png)
 
-SMTP is the main transport in Nodemailer for delivering messages. SMTP is also the protocol used between different email hosts, so its truly universal.
+![](./images/postman-6.png)
 
-To know more about how to set up the transporter, click here https://nodemailer.com/smtp/
+It seems that the cloud function sent the email successfully. Now, go to your inbox and check if you got the email sent with the function:
 
-Message config: https://nodemailer.com/message/
+![](./images/email-1.png)
 
+![](./images/email-2.png)
 
 
-## Step 2: Register your app with Firebase
 
-2) Go to general settings. Scroll down and select web app
+Excellent! you have successfully tested your cloud function running locally.
 
-3) 
+Now, it's time to deploy it to the cloud!
 
-````
 
-````
-
-
-
-## Step 3: Add Firebase SDKs and initialize Firebase
-
-Using module bundlers
-
-https://firebase.google.com/docs/web/setup#using-module-bundlers
-
-
-
-why cors? Without it, calling the function from the react app throws this error:
-
-````
-Access to fetch at 'https://us-central1-nodemailer-form-8fdf0.cloudfunctions.net/sendEmail' from origin 'http://localhost:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
-````
-
-Because we're calling the function from the browser, from origin: localhost:3000. Wiht postman, we can always call the function, with or without cors.
-
-On the developent phase, origin:true is OK, then add the url where your app is deployed to.
-
-Now, we have to write a function:
-
-````
-
-````
-
-what is nodemailer? https://nodemailer.com/about/
-
-
-
-Test the function locally with a local emulator:
-
-https://firebase.google.com/docs/functions/local-emulator
-
-```
-firebase emulators:start --only functions
-```
-
- ✔  functions[sendEMail]: http function initialized (http://localhost:5001/nodemailer-form-8fdf0/us-central1/sendEmail).
-
-Let's use postman:
-
-Download postman in your computer:
-
-https://www.postman.com/downloads/
-
-See the steps
-
-succes message
-
-then turn internet off and see error message
-
-Now, deploy the function to firebase
-
-````
-firebase deploy --only functions
-````
-
-
-
-````
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-const nodemailer = require('nodemailer');
-const cors = require('cors')({origin: true});
-admin.initializeApp();
-
-let transporter = nodemailer.createTransport({
-    host: "smtpout.secureserver.net",
-    port: 465,
-    secure: true, // true for 465, false for other ports
-    auth: {
-        user: 'hi@munchjones.com',
-        pass: 'tebI9068.'
-    }
-});
-
-exports.sendEmail = functions.https.onRequest((req, res) => {
-
-    // Enable CORS using the `cors` express middleware.
-    cors(req, res, () => {
-      
-        // getting dest email by query string
-        const email = req.body.data.email;
-        const name = req.body.data.name;
-        const message = req.body.data.message;
-
-        const mailOptions = {
-            from: `hi@munchjones.com`,
-            to: `hi@munchjones.com`,
-            subject: 'New message from the app',
-            text:  `New message from munchjones.com app. Sent by ${name} (${email}): ${message}`
-           
-        }
-        // returning result
-        return transporter.sendMail(mailOptions, (error, info) => {
-            if(error){
-                return res.status(500).send({
-                    data:
-                    {
-                        "status": 500,
-                        "message": error.toString()
-                    }})
-                }
-            
-            return res.status(200).send( {
-                data:
-                {
-                    "status": 200,
-                    "message": "sent"
-            }});
-        });
-    });    
-});
-
-
-````
-
-
-
-The following error when running:
-
-````
-firebase deploy --only functions
-````
-
-Error: Your project nodemailer-form-8fdf0 must be on the Blaze (pay-as-you-go) plan to complete this command. Required API cloudbuild.googleapis.com can't be enabled until the upgrade is complete. To upgrade, visit the following URL:
-
-
-
-Now, to deploy the function, let's change the plan of the project. Cick on spark
-
-Unles we hit call the function over 2M times a month, Google won't charge us at all!
-
-Free up to 2M/month
-Then $0.40/million
-
-Super cheap!
-
-Check the pricing here https://firebase.google.com/pricing?authuser=0
-
-feedback:
-
-✔  functions[sendEmail(us-central1)]: Successful create operation. 
-Function URL (sendEmail): https://us-central1-nodemailer-form-8fdf0.cloudfunctions.net/sendEmail
-
-
-
-Add a console.log(req) to the cloud function and pick it up from the log tab on firebase, for debugging purposes.
-
-Change cors config to specific URL
-
-
-
-## 
 
 ## Deploying the cloud function
 
-## Testing the deployed cloud function
+The first step to deploy the cloud function to the cloud is changing the plan of the Firebase project to **Blaze, which is a pay as you plan**, but it has generous free quotas, e.g 2M invocations a month to cloud functions, **for free!**.
+
+You can check the free quotas and pricing [here](https://firebase.google.com/pricing?authuser=0).
+
+There's no way to disable the cloud function automatically if it is abused by someone hitting it thousands of times, but we can set up a budget alert so we're notified by email when we're are gonna be charged by Google a certain amount.
+
+#### Upgrading to a Blaze plan
+
+Follow these instructions to change the plan and set up a budget alert:
+
+![](./images/blaze-1.png)
+
+![](./images/blaze-2.png)
+
+![](./images/blaze-3.png)
+
+![](./images/blaze-4.png)
+
+![](./images/blaze-5.png)
+
+
+
+#### Let's finally deploy it! 
+
+To finally deploy the cloud function to the cloud, run the following command:
+
+````bash
+firebase deploy --only functions
+````
+
+Then, we'll see this:
+
+`````bash
+=== Deploying to 'your-project-name'...
+
+i  deploying functions
+i  functions: ensuring required API cloudfunctions.googleapis.com is enabled...
+i  functions: ensuring required API cloudbuild.googleapis.com is enabled...
+✔  functions: required API cloudbuild.googleapis.com is enabled
+✔  functions: required API cloudfunctions.googleapis.com is enabled
+i  functions: preparing functions directory for uploading...
+i  functions: packaged functions (21.64 KB) for uploading
+✔  functions: functions folder uploaded successfully
+i  functions: creating Node.js 12 function sendEmail({server-location})...
+✔  functions[sendEmail({server-location})]: Successful create operation. 
+Function URL (sendEmail): https://{server-location}-{your-project-name}.cloudfunctions.net/sendEmail
+
+✔  Deploy complete!
+`````
+
+Amazing! We are ready now to test it with Postman!
+
+
+
+## Testing the deployed function on postman
+
+This test is the same as we did [Using Postman] section, but making the request to this url: `https://{server-location}-{your-project-name}.cloudfunctions.net/sendEmail`. 
+
+For example, if your project name is `nodemailer-form-akfhs` and the server is `us-central1`, then the url would be: `https://us-central1-nodemailer-form-akfhs.cloudfunctions.net/sendEmail`.
+
+Note that `{project-name}` is given by Firebase, and is the name you choose for your project + 5 characters.
+
+You should see a successfull response on Postman, and a new email in your inbox, if everything went well.
+
+
+
+##  Calling the cloud function from the React app
+
+Now it's time to call the cloud function from inside our React app and get rid off the `fakeCloudFunction`.
+
+We could just make an http POST request to `https://{server-location}-{your-project-name}.cloudfunctions.net/sendEmail`, but there's a better way: we can use the Firebase SDK that allows us to interact with different Firebase services, like cloud functions, from inside our app in an easy way.
+
+#### Registering the app on Firebase
+
+The first step towards adding the SDK is registering an app and copy the `firebaseConfig`:
+
+![](./images/register-app-1.png)
+
+![](./images/register-app-2.png)
+
+![](./images/register-app-3.png)
+
+![](./images/register-app-4.png)
+
+
+
+## Adding the Firebase SDK
+
+We're gonna add the Firebase SDK via npm to our project. 
+
+Open the terminal **at the root of your project**, and run this command:
+
+````bash
+npm i firebase
+````
+
+This command will install the firebase module at `/node_modules` at the root level, not at `functions/node_modules`.
+
+Now, create a `src/firebase.js` file and paste this:
+
+````javascript
+//src/firebase.js
+
+//Import firebase from node_modules
+import firebase from 'firebase';
+
+//you copy and paste this config from your Firebase Console
+const firebaseConfig = {
+    apiKey: "{your-apiKey}",
+    authDomain: "{your-authDomain}",
+    projectId: "{your-projectId}",
+    storageBucket: "{your-storageBucket}",
+    messagingSenderId: "{your-messagingSenderId}",
+    appId: "{your-appId}",
+    measurementId: "{your-measurementId}"
+};
+
+//initialize a Firebase instance
+firebase.initializeApp(firebaseConfig);
+
+//initialize Cloud Functions through Firebase
+firebase.functions();
+
+//this is optional, in case you want you wanna use analytics
+firebase.analytics();
+
+//export the namespace to import it in src/App.js
+export default firebase;
+````
+
+
+
+Let's know make the following changes to `src/App.js`:
+
+````javascript
+//src/App.js
+
+//add this import at the top of the file
+import firebase from './firebase';
+
+//add this to assign the sendEmail cloud function to a constant
+const sendEmail = firebase.functions().httpsCallable('sendEmail');
+
+//inside function App()
+function App() {
+  //inside submitForm()
+  const submitForm = () => {
+  //replace fakeCloudFunction with sendEmail
+  sendEmail({
+    name: contactForm.name.value,
+    email: contactForm.email.value,
+    message: contactForm.message.value
+  }).
+  then(() => {
+  	(...)  
+  })
+  .catch(() => {
+    (...)
+  })
+}
+
+
+
+````
+
+That's it! This is all the set up needed to finally call the cloud function from inside the React app.
+
+Let's now test it.
+
+
+
+## Testing the deployed function from inside the React App
+
+Let's serve the app in development by running:
+
+````bash
+npm start
+````
+
+and open the browser on `localhost:3000`.
+
+Now, fill in the form and submit it. The `snackbars` should tell you if the request was successful or not. If you wanna be really sure, open Chrome dev tools, go to network, and check the response body of the request.
+
+To complete the test, go to your email inbox, and verify you got the the email.
+
+Optionally, you could deploy your React app to Firebase, following this [steps](https://firebase.google.com/docs/hosting/quickstart). 
+
+As a final step, you can change the setup of the `cors` middleware of the cloud function by adding to the whitelist the `URL` of your deployed app.
+
+````javascript
+//functions/index.js
+
+const cors = require('cors')({origin: "{your-deployed-app-URL}"});
+````
+
+This way, requests on the browser can only be done from your deployed app and not from other URLs.
+
+If you redeploy your cloud function after changing the `cors` config, and you run your app locally on `localhost:3000`, you should see the following the error on the console on Chrome dev tools when submiting the form:
+
+````bash
+Access to fetch at 'https://us-central1-nodemailer-form-8fdf0.cloudfunctions.net/sendEmail' from origin 'http://localhost:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+````
+
+If you filll in the form form your deployed app URL, you shouldn't see any error related to CORS. This would prove that the `cors` config change was done successfully.
+
+
+
+**That was all!** It was a long tutorial, but now, you can feel more confident and apply this for a contact form in your next project! 
+
+**Happy coding and have fun!**
 
