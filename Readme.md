@@ -1,10 +1,14 @@
 # React contact form with Nodemailer and cloud functions
 
-Do you need to implement a contact form in a React app but don't want create a back-end app? Let's learn how to use an email service called [Nodemailer](https://nodemailer.com/about/), and [Cloud functions on Firebase](https://firebase.google.com/docs/functions), to make this task super easy! As a bonus you'll get a full working form with **validation** and with the style of **[Material UI](https://material-ui.com/)!
+Do you need to implement a **contact form in a React** app but **don't want create a back-end app to send an email?** Let's learn how to use a **serverless approach** with **[Cloud functions on Firebase](https://firebase.google.com/docs/functions)**, and an email service called **[Nodemailer](https://nodemailer.com/about/)** to make this task super easy! 
+
+As a bonus, you'll get a React **full working form** with **validation**, with the awesome style of **[Material UI](https://material-ui.com/)**. Check out the form here 👉 [Open live app](https://nodemailer-form-8fdf0.web.app/).
+
+The GitHub repo of the app is [here].
 
 
 
-**Note: if you wanna deploy the cloud function to the cloud, you'll need a credit card, altough you're not gonna be charged unless you call the cloud function more than 2 million times**
+👉 Special thanks to [Sebastián Gallardo](https://www.linkedin.com/in/sebastian-gallardo-3aaba12b/) who wrote the cloud function of this article.
 
 
 
@@ -14,9 +18,25 @@ Table of contents:
 
 
 
+
+
+**Note: if you wanna deploy a cloud function to the cloud, you'll need a credit card, altough you're not gonna be charged unless you invoke it more than 2 million times a month**
+
+
+
 ## Creating the contact form:
 
-In this section we're gonna create a contact form with React and Material UI, and we're gonna add validation, a spinner to show that something is happending after clicking the submit button, and a snackbar to inform the user what was the result of the request.
+In this section we're gonna create a contact form with React, with the following features:
+
+-Material UI components, to make it look good.
+
+-Validation, to provide a better UX. The form can only be submitted if all the fields are not empty and the email address has the appropriate shape.
+
+-Spinner, to show that something is on the way.
+
+-Snackbars, to inform the user the result of an action.
+
+
 
 So, let's get started and start building it:
 
@@ -40,9 +60,9 @@ npm install @material-ui/lab
 
 Please note that [react](https://www.npmjs.com/package/react) >= 16.8.0 and [react-dom](https://www.npmjs.com/package/react-dom) >= 16.8.0 are peer dependencies.
 
-Material UI provides us with already styled React component we can use straight away, and they implement [Material](https://material.io/design/introduction), a design system created by Google to help teams build high-quality digital experiences for Android, iOS, Flutter, and the web.
+Material UI provides us with out of the box styled React components we can use straight away, and they implement [Material](https://material.io/design/introduction), a design system created by Google to help teams build high-quality digital experiences for Android, iOS, Flutter, and the web.
 
-In other words, using Material UI is gonna give us an App-like look to our form ;)
+In other words, using Material UI is gonna give us an App-like look to our form.
 
 3) **Add Roboto Font:**
 
@@ -56,14 +76,16 @@ One way of adding it is via a CDN:
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
 ````
 
-The above `<link>` tag must be added inside the `<head>` `</head>` parts.
+The above `<link>` tag must be added inside the `<head>` `</head>` tags.
 
 Other way to install the font is via npm. You can learn how to do it [here](https://material-ui.com/components/typography/#general).
 
-4) **Create the form**:
+4) **Create the form** by pasting this code inside `src/App.js` file:
 
 ````javascript
-//import useState hook
+//src/App.js
+
+//import `useState` hook
 import { useState } from 'react';
 
 //import styles
@@ -79,31 +101,34 @@ import Snackbar from '@material-ui/core/Snackbar';
 import { Alert } from '@material-ui/lab'; 
 import { makeStyles } from '@material-ui/core/styles';
 
-//add CSS classes for Material UI components calling a function that returns a another function
+//add CSS classes for Material UI components calling a function that returns another function
 const useStyles = makeStyles((theme) => ({
-  //the CSS class honeypot is later on added to the honeypot field, which is not displayed to users.
+
+  //the CSS class honeypot is added to the honeypot field later on, which is not displayed to users.
   honeypot: {
     display: 'none'
   }
+
 }));  
 
 function App() {
-  //assign the constant classes to an object for Material IU components by calling a function
+
+  //assign the constant `classes` to an object for Material IU components by calling a function
   const classes = useStyles();
 
-  //define error state and the function to change it. The value is false by default
+  //define `error` state and the function to change it. The value is false by default
   const [error, setError] = useState(false); 
 
-  //define openSnackbar state and the function to change it. The value is false by default
+  //define `openSnackbar` state and the function to change it. The value is false by default
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  //define isLoading state and the function to change it. The value is false by default
+  //define `isLoading` state and the function to change it. The value is false by default
   const [isLoading, setIsLoading] = useState(false); 
 
-  //define formIsValid state and the function to change it. The value is false by default
+  //define `formIsValid` state and the function to change it. The value is false by default
   const [formIsValid, setFormIsValid] = useState(false); 
 
-  //define contacForm state and the function to change it
+  //define `contacForm` state and the function to change it
   //the whole form is represented by an object, with nested objects inside that represent the input fields  
   const [contactForm, setContactForm] = useState({ 
     name: {
@@ -155,23 +180,23 @@ function App() {
       blur: false
     },  
   
-    //this honeypot field isn't rendered, so users don't see it, but fools bots that fill it automatically
+    //this honeypot field isn't rendered to the DOM, so users don't see it, but it fools bots that fill it automatically
     honeypot: { 
       value: '',
       elementConfig: {
         className: classes.honeypot,
         label: 'If you are a human, do not type anything here. I am here to fool bots', 
       },
-      //This validation property is added just to avoid and error when running checkValidity();
+      //This `validation` property is added just to avoid and error when running checkValidity();
       validation: {
       },
-      //it's valid by default so it doesn't prevent human users to click the submit button
+      //this input is valid by default so it doesn't prevent human users to click the `Send` button
       valid: true,
       blur: false
     } 
   }); 
 
-//convert the contactForm object into an array
+//convert the `contactForm` object into an array
 const formElementsArray = []; 
 for (let key in contactForm) {
     formElementsArray.push({
@@ -220,15 +245,15 @@ const inputChangedHandler = (event, inputIdentifier)  => {
       formIsValid = updatedContactForm[inputElementIdentifier].valid && formIsValid;
   }
 
-  //update the contactForm state
+  //update `contactForm` state
   setContactForm(updatedContactForm);
 
-  //update formIsValid
+  //update `formIsValid` state
   setFormIsValid(formIsValid)
 
 } 
 
-//this function is called from inside inputChangedHandler(), and checks the validity of an input field
+//this function is called from inside `inputChangedHandler()`, and checks the validity of an input field
 const checkValidity = (value, rules) => {
 
   //it's always true until there's one false in the way
@@ -239,10 +264,10 @@ const checkValidity = (value, rules) => {
   }
 
   if (rules.isEmail) {
-    //the pattern is a Regular Expression that matches the shape of an email
+    //the `pattern` constant is a Regular Expression that matches the shape of an email
     const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
     
-    //pattern.test() returns true or false
+    //`pattern.test()` returns true or false
     isValid = pattern.test(value) && isValid;
   }
 
@@ -250,21 +275,21 @@ const checkValidity = (value, rules) => {
 
 }
 
-//this function is called when the users closes the snackbar after getting an error (when the cloud functions fails)
+//this function is called when the user closes the snackbar after getting an error (when the cloud function fails)
 const closeSnackbar = () => {
   setOpenSnackbar(false);
 }
 
-//this function is called when clicking the "Send" button
+//this function is called when clicking the `Send` button
 const submitForm = () => {
 
-  //if the bot filled the honeypot field, don't keep running code(e.g call a cloud function)
+  //if a bot filled the honeypot field, don't keep running code (e.g don't call a cloud function)
   if (contactForm.honeypot.value != '') {
-    //the below return is called an "early return"
+    //the below `return` is called an `early return` and it ends the execution of the function.
     return
   }
 
-  //set isLoading to true, so the spinner is rendered
+  //set `isLoading` state to true, so the spinner is rendered
   setIsLoading(true);
 
   //this fake cloud function consoles log the data from the form that is passed to it, and has a 50% chance of resolving.
@@ -282,15 +307,16 @@ const submitForm = () => {
     });
   }
 
-   //call the fake cloud function. Later on this function will be replaced by the real cloud function.
+   //call the fake cloud function. Later on, this function will be replaced by the real cloud function.
    fakeCloudFunction({
     name: contactForm.name.value,
     email: contactForm.email.value,
     message: contactForm.message.value
   }).
-  //this code below runs when the message was successfully sent from inside the cloud function
+  //the code inside the `then()` block runs when the message was successfully sent from inside the cloud function
   then(() => {
-    //create a new contactForm object that looks like the original contactForm state
+
+    //create a new `contactForm` object that looks like the original `contactForm` state
     let originalContactForm = {};
     for(let key in contactForm){
       originalContactForm[key] = {
@@ -301,31 +327,33 @@ const submitForm = () => {
       }
     }
 
-    //reset contactForm state to its original values
+    //reset `contactForm` state to its original value
     setContactForm(originalContactForm);
 
     //reset the whole form validity to false
     setFormIsValid(false);
 
-    //set error to false.
+    //set `error` state to false.
     setError(false);
 
-    //set isLoading to false, so the spinner is not rendered anymore
+    //set `isLoading` state to false, so the spinner is not rendered anymore
     setIsLoading(false);
 
-    //set openSnackbar to true, so the snackbar is rendered, with content that depends on the error state
+    //set `openSnackbar` state to true, so the snackbar is rendered, with content that depends on the error state
     setOpenSnackbar(true);
   }).
   //this code below runs when the message was NOT successfully sent from inside of the cloud function
   catch(() => {
-    //set the error state to true
+
+    //set `error` state to true
     setError(true);
 
-    //set isLoading to false, so the spinner is not rendered anymore
+    //set `isLoading` state to false, so the spinner is not rendered anymore
     setIsLoading(false);
 
-    //set openSnackbar to true, so the snackbar is rendered, with content that depends on the error state
+    //set `openSnackbar` state to true, so the snackbar is rendered, with content that depends on the error state
     setOpenSnackbar(true);
+
   })
 
 } 
@@ -382,50 +410,29 @@ const submitForm = () => {
 export default App;
 
 
+
 ````
 
-The above code has a dummy implementation of an cloud function, using a function with a `Promise` and a `setTimeout()`:
+The above code has a dummy implementation of cloud function called `fakeCloudFunction` , using a function with a `Promise` and a `setTimeout()`, but it's gonna be replaced in the comming sections with a real cloud function that actually sends and email with the data we provide in the form.
 
-````javascript
-//fakeCloudFunction
-
-const fakeCloudFunction = (data) => {
-    console.log(data);
-    return new Promise((resolve, reject) => {
-      const error = Math.random() > 0.5 ? true : false;
-      setTimeout(() => {
-        if (!error) {
-          resolve();
-        } else {
-          reject();
-        }
-      },1000)
-    });
-  }
-````
-
-In the next section we're gonna add the real cloud function that actually sends and email with the data we provide in the form.
-
-If you feel overwelmed by the length and complexity of the `App.js` React component containing the form, take a look a this Academind course: [React - The Complete Guide (incl Hooks, React Router, Redux)](https://pro.academind.com/p/react-the-complete-guide-incl-hooks-react-router-redux). The form code was copied from there, and it's explained step by step.
+If you feel overwelmed by the length and complexity of the `App.js`  component containing the form, take a look a this Academind course: [React - The Complete Guide (incl Hooks, React Router, Redux)](https://pro.academind.com/p/react-the-complete-guide-incl-hooks-react-router-redux) and then you'll feel at home reading the code again. The form code was copied from there, and it's explained there step by step.
 
 5) **Test the form:**
 
-In order to test it, run this command:
+In order to test the form manually, run this command to serve the app:
 
 ````bash
 npm start
 ````
 
-and then open a tab in the browser and go to `localhost:3000` to see the form. Try clicking the fields and leave them empty, to see if validation works. Also try to add an invalid email and see what happens.
-
-The form should let you submit it unless all the fields are not empty and the 
+and then open a tab in the browser and go to `localhost:3000` to see the form. Try clicking the fields and leave them empty, to see if validation works. Also try to add an invalid email address and see what happens.
 
 6) **Test the honeypot:**
 
-As we don't want our form to be filled and submitted by bots, there's a trap we've set up in the form, which is a field that is not displayed to users, but that bots see, and fill it automatically. 
+As we don't want our form to be filled and submitted by bots, there's a trap we've set up in the form, which is a form field that is not displayed to users, but that bots see, and fill it automatically. 
 
 ````javascript
-//the honeypot field
+//the honeypot form field
 
  honeypot: { 
       value: '',
@@ -441,7 +448,7 @@ As we don't want our form to be filled and submitted by bots, there's a trap we'
 ````
 
 ````javascript
-//don't call the cloud function if the field was filled
+//if the honeypot field was filled, the early return prevents the cloud function to be called
 
 const submitForm = () => {
   if (contactForm.honeypot.value != '') {
@@ -451,15 +458,15 @@ const submitForm = () => {
 }
 ````
 
-Then, we know that if the honeypot field was filled, that was a done by a bot, and we handle the submission of the form in a different way, by doing nothing and avoiding calling the cloud function.
+Then, we know that if the honeypot field was filled, that was a done by a bot, and we handle the submission of the form in a different way, by doing an early return and avoid calling the cloud function.
 
-So, in order to test the honeypot, just change the `contactForm` state by swaping `contactForm.honeypot.value` from `''` to a number like `1` or a string `hey, I am bot who filled this form!`.
+So, in order to test the honeypot, just change manually the `contactForm` state in `src/App.js` by swaping `contactForm.honeypot.value` from `''` to a number like `1` or a string like this one: `hey, I am bot who filled this form!`.
 
-After doing the above change, you should still be able to click the `Send` button, but `fakeCloudFunction()` won't be called. Youd can verify that by looking at the `Console` on the dev tools on the browser. You shouldn't see the data from the form that is logged from inside `fakeCloudFunction()`.
+After doing the above change, you should still be able to click the `Send` button, but `fakeCloudFunction()` won't be called. You can verify that by looking at the `Console` on the dev tools on the browser. You shouldn't see the data logged from the form that is console logged from inside `fakeCloudFunction()`.
 
 
 
-Great! Now we have a form already working and manually tested! Let's now replace the `fakeCloudFunction()` with the real one in the following sections.
+**Great!** We have a **form already working and manually tested!** Let's now replace the `fakeCloudFunction()` with the real one in the following sections.
 
 
 
@@ -473,7 +480,7 @@ Your JavaScript or TypeScript code is stored in Google's cloud and runs in a man
 
 To know more about them, read the [docs](https://firebase.google.com/docs/functions).
 
-If you wanna know more about **serverless**, you check out this Academind course: [AWS Serverless APIs & Apps - A Complete Introduction](https://pro.academind.com/p/aws-serverless-apis-apps-a-complete-introduction).
+If you wanna know more about **serverless**, you can check out this Academind course: [AWS Serverless APIs & Apps - A Complete Introduction](https://pro.academind.com/p/aws-serverless-apis-apps-a-complete-introduction), which uses AWS instead of Firebase.
 
 
 
@@ -485,7 +492,7 @@ Follow these steps to write your first cloud function:
 
 In the [Firebase console](https://console.firebase.google.com/), click **Add project**, then select or enter a **Project name**. You could name it `nodemailer form`, but feel free to choose something different.
 
-If you wanna use an already existing project, [follow these instructions](https://firebase.google.com/docs/functions/get-started).
+If you have trouble setting up the project, read this [docs](https://firebase.google.com/docs/functions/get-started).
 
 2) **Install the Firebase CLI:**
 
@@ -552,7 +559,7 @@ Choose this option:
 ❯ Use an existing project 
 ````
 
-  e) We'll be asked which project and select the project you created on the step 1
+  e) We'll be asked which project and select the project you created on the step 1.
 
 ````bash
 ? Select a default Firebase project for this directory: 
@@ -560,7 +567,7 @@ Choose this option:
 (...)
 ````
 
-Where `{your-project-name}` depends on how you named your project.
+Where `your-project-name` depends on how you named your project. The `xxxxx` characters are chosen by Firebase automatically.
 
 Then, we'll see this:
 
@@ -592,9 +599,9 @@ Let's choose:
 N
 ````
 
-to make things easier.
+to make this tutorial easier.
 
-  g) At this point, some files have been created inside the new folder called `/functions`:
+  g) At this point, some files have been created inside the new folder called `functions`:
 
 ````
 ✔  Wrote functions/package.json
@@ -618,19 +625,19 @@ i  Writing project information to .firebaserc...
 ✔  Firebase initialization complete!
 ````
 
-  i) Lets install a couple more dependancies we're gonna need in our cloud function, but first make sure to navigate to `/functions`  with your terminal:
+  i) Lets install a couple more dependancies that we're gonna need in our cloud function, but first make sure to navigate to `/functions`  with your terminal:
 
 ````bash
 cd functions
 ````
 
-Now, check that you are currently at `your-project-name/functions` by looking at the terminal. If you're not sure, just check it by running:
+Now, check that you are currently at `your-react-project-name/functions` by looking at the terminal. If you're not sure, just check it by running:
 
 ````bash
 pwd
 ````
 
-Now that your are sure you're inside at the right location, run this command to install nodemailer and cors modules:
+Now that your are sure you're inside the right location, run this command to install `nodemailer` and `cors` modules:
 
 ````bash
 npm i nodemailer cors
@@ -640,13 +647,13 @@ npm i nodemailer cors
 
 #### Let's finally write the cloud function
 
-All the cloud functions we wanna use must be exported from `/functions/index.js` file. As this project only has one function, let's define it and export it right in that file. 
+All the cloud functions we wanna use must be exported from `functions/index.js` file. As this project only has one function, let's define it and export it inside that file. 
 
-As a note, when you have multiple functions, it's better to create different files for them, and import & export them from `/functions/index.js`.
+As a note, when you have multiple functions, it's better to create different files for them, and import & export them inside `functions/index.js`.
 
-To email is gonna be send using **[Nodemailer](https://nodemailer.com/about/)**, a module, that we're already installed, for Node.js applications to allow easy as cake email sending ;)
+To email is gonna be send using **[Nodemailer](https://nodemailer.com/about/)**, a module, that we've already installed, for Node.js applications to allow easy as cake email sending ;)
 
-So, let's write and export the cloud function in `/functions/index.js`:
+So, let's write and export the cloud function inside `functions/index.js`:
 
 ````javascript
 //functions/index.js
@@ -669,7 +676,7 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-//export the cloud function called sendEmail
+//export the cloud function called `sendEmail`
 exports.sendEmail = functions.https.onRequest((req, res) => {
     //for testing purposes
     console.log("from sendEmail function. The request object is:", JSON.stringify(req.body));
@@ -689,7 +696,7 @@ exports.sendEmail = functions.https.onRequest((req, res) => {
             text:  `${name} says: ${message}`
         }
 
-        //call the built in sendMail function and return different responses upon success and failure
+        //call the built in `sendMail` function and return different responses upon success and failure
         return transporter.sendMail(mailOptions, (error, info) => {
             if(error){
                 return res.status(500).send({
@@ -715,7 +722,7 @@ exports.sendEmail = functions.https.onRequest((req, res) => {
 
 ````
 
-We use the `cors()` middleware...but what's that for? It helps us to allow certain `URL` from where requests can be done to the cloud function. In the development phase, this config is used to let us call the function from any URL:
+We use the `cors()` middleware...but what's that for? It helps us managing which`URLs` requests can be sent to our cloud function from. In the development phase, the config below is used to let us call the function from any URL:
 
 ````javascript
 const cors = require('cors')({origin: true});
@@ -723,9 +730,11 @@ const cors = require('cors')({origin: true});
 
 The documentation for the **transporter configuration** can be checked [here](https://nodemailer.com/smtp/). In order to fill in the required fields, like `host`, `port` and `auth` , you need to go to your email provider and find them.
 
-The documentation for the **email message configuration** can be checked [here](), where you can find all the options available.
+The documentation for the **email message configuration** can be checked [here](https://nodemailer.com/message/), where you can find all the options available.
 
-Congratulations! You've just created your first cloud function!
+
+
+**Congratulations**! You've just created your first cloud function!
 
 
 
@@ -733,27 +742,27 @@ Congratulations! You've just created your first cloud function!
 
 #### Starting a local emulator
 
-The moment of truth has come: it's time to see if our cloud functions works properly. Let's do it locally with a localemulator; run this in the terminal:
+The moment of truth has come: it's time to see if our cloud function works properly. Let's do it **locally with a local emulator**; run this in the terminal:
 
 ````bash
 firebase emulators:start --only functions
 ````
 
-After running the above command, we should be prompted with this:
+After running the command above, we should be prompted with this:
 
 ````bash
 ✔  functions[sendEmail]: http function initialized (http://localhost:5001/{your-project-name}/{server-location}/sendEmail).
 ````
 
-where `your-project-name` and `server-location` depends on how you set up the Firebase project at the step 1 of [Cloud function setup time!] section.
+where `your-project-name` and `server-location` depends on how you set up the Firebase project at the step 1 of [Cloud function setup time!](#cloud-function-setup-time) section.
 
-To know know more about the local emulator, check this [docs.](https://firebase.google.com/docs/functions/local-emulator)
+To know know more about the local emulator, read these [docs.](https://firebase.google.com/docs/functions/local-emulator)
 
 
 
 #### Using Postman
 
-To test the cloud function running locally on `http://localhost:5001/{your-project-name}/{server-location}/sendEmail` , we're gonna open [Postman](https://www.postman.com/), which is a software that let us call endpoints and test them individually. You can download it [here](https://www.postman.com/downloads/).
+To test the cloud function already running locally on `http://localhost:5001/{your-project-name}/{server-location}/sendEmail` , we're gonna open [Postman](https://www.postman.com/), which is a software that let us call endpoints and test them individually. You can download it [here](https://www.postman.com/downloads/).
 
 Follow these steps to test the cloud function:
 
@@ -769,7 +778,7 @@ Follow these steps to test the cloud function:
 
 ![](./images/postman-6.png)
 
-It seems that the cloud function sent the email successfully. Now, go to your inbox and check if you got the email sent with the function:
+It seems that the cloud function sent the email successfully. Now, go to your email provider inbox and check if you got the email sent with the function:
 
 ![](./images/email-1.png)
 
@@ -777,7 +786,7 @@ It seems that the cloud function sent the email successfully. Now, go to your in
 
 
 
-Excellent! you have successfully tested your cloud function running locally.
+**Excellent!** you have successfully tested your cloud function running locally.
 
 Now, it's time to deploy it to the cloud!
 
@@ -785,11 +794,11 @@ Now, it's time to deploy it to the cloud!
 
 ## Deploying the cloud function
 
-The first step to deploy the cloud function to the cloud is changing the plan of the Firebase project to **Blaze, which is a pay as you plan**, but it has generous free quotas, e.g 2M invocations a month to cloud functions, **for free!**.
+The first step to deploy the cloud function to the cloud is changing the plan linked to the Firebase project to **Blaze, which is a pay as you plan**, but it has generous free quotas, e.g 2M invocations a month to cloud functions, **for free!**.
 
 You can check the free quotas and pricing [here](https://firebase.google.com/pricing?authuser=0).
 
-There's no way to disable the cloud function automatically if it is abused by someone hitting it thousands of times, but we can set up a budget alert so we're notified by email when we're are gonna be charged by Google a certain amount.
+There's no way to disable the cloud function automatically if it is abused by someone hitting it thousands of times, but we can set up a budget alert so we're notified by email when we're are already charged a certain ammount by Google .
 
 #### Upgrading to a Blaze plan
 
@@ -830,22 +839,20 @@ i  functions: packaged functions (21.64 KB) for uploading
 ✔  functions: functions folder uploaded successfully
 i  functions: creating Node.js 12 function sendEmail({server-location})...
 ✔  functions[sendEmail({server-location})]: Successful create operation. 
-Function URL (sendEmail): https://{server-location}-{your-project-name}.cloudfunctions.net/sendEmail
+Function URL (sendEmail): https://{server-location}-{your-project-name-xxxxx}.cloudfunctions.net/sendEmail
 
 ✔  Deploy complete!
 `````
 
-Amazing! We are ready now to test it with Postman!
+**Amazing!** We are now ready to test it with Postman again!
 
 
 
 ## Testing the deployed function on postman
 
-This test is the same as we did [Using Postman] section, but making the request to this url: `https://{server-location}-{your-project-name}.cloudfunctions.net/sendEmail`. 
+This test is the same as we did [Using Postman](#using-postman) section, but making the request to this url instead: `https://{server-location}-{your-project-name-xxxx}.cloudfunctions.net/sendEmail`. 
 
 For example, if your project name is `nodemailer-form-akfhs` and the server is `us-central1`, then the url would be: `https://us-central1-nodemailer-form-akfhs.cloudfunctions.net/sendEmail`.
-
-Note that `{project-name}` is given by Firebase, and is the name you choose for your project + 5 characters.
 
 You should see a successfull response on Postman, and a new email in your inbox, if everything went well.
 
@@ -855,7 +862,7 @@ You should see a successfull response on Postman, and a new email in your inbox,
 
 Now it's time to call the cloud function from inside our React app and get rid off the `fakeCloudFunction`.
 
-We could just make an http POST request to `https://{server-location}-{your-project-name}.cloudfunctions.net/sendEmail`, but there's a better way: we can use the Firebase SDK that allows us to interact with different Firebase services, like cloud functions, from inside our app in an easy way.
+We could just make an http POST request to `https://{server-location}-{your-project-name-xxxxx}.cloudfunctions.net/sendEmail`, but there's a better way: we can use the Firebase SDK that allows us to interact with different Firebase services, like cloud functions, from inside our app in an easy way.
 
 #### Registering the app on Firebase
 
@@ -881,9 +888,9 @@ Open the terminal **at the root of your project**, and run this command:
 npm i firebase
 ````
 
-This command will install the firebase module at `/node_modules` at the root level, not at `functions/node_modules`.
+This command will install the firebase module inside the `node_modules` folder at the root level of our project, but not inside `functions/node_modules`.
 
-Now, create a `src/firebase.js` file and paste this:
+Now, create a `src/firebase.js` (or any name you like) file and paste this:
 
 ````javascript
 //src/firebase.js
@@ -891,7 +898,7 @@ Now, create a `src/firebase.js` file and paste this:
 //Import firebase from node_modules
 import firebase from 'firebase';
 
-//you copy and paste this config from your Firebase Console
+//you have copy and paste this config from your Firebase Console
 const firebaseConfig = {
     apiKey: "{your-apiKey}",
     authDomain: "{your-authDomain}",
@@ -911,7 +918,7 @@ firebase.functions();
 //this is optional, in case you want you wanna use analytics
 firebase.analytics();
 
-//export the namespace to import it in src/App.js
+//export the `firebase` namespace to import it in src/App.js
 export default firebase;
 ````
 
@@ -950,7 +957,11 @@ function App() {
 
 ````
 
-That's it! This is all the set up needed to finally call the cloud function from inside the React app.
+We use the `httpCallable()` method to directly point to a specific cloud function, by simply passing the name of the cloud function, which is `sendEmail` in this case.
+
+The **`httpCallable()`** method **can only be used when the cloud function was defined with `functions.http()` backend API**, which is true in our case (you can check `functions/index.js` to verify that we used it).
+
+**That's it!** This is all the setup needed to finally call the cloud function from inside the React app.
 
 Let's now test it.
 
@@ -966,11 +977,11 @@ npm start
 
 and open the browser on `localhost:3000`.
 
-Now, fill in the form and submit it. The `snackbars` should tell you if the request was successful or not. If you wanna be really sure, open Chrome dev tools, go to network, and check the response body of the request.
+Now, fill in the form and submit it. The `snackbars` should tell you if the request was successful or not. If you wanna be really sure, open your browser dev tools, go to network, and check the response body of the request.
 
 To complete the test, go to your email inbox, and verify you got the the email.
 
-Optionally, you could deploy your React app to Firebase, following this [steps](https://firebase.google.com/docs/hosting/quickstart). 
+Optionally, you could also deploy your React app to Firebase, following this [steps](https://firebase.google.com/docs/hosting/quickstart). 
 
 As a final step, you can change the setup of the `cors` middleware of the cloud function by adding to the whitelist the `URL` of your deployed app.
 
@@ -982,17 +993,17 @@ const cors = require('cors')({origin: "{your-deployed-app-URL}"});
 
 This way, requests on the browser can only be done from your deployed app and not from other URLs.
 
-If you redeploy your cloud function after changing the `cors` config, and you run your app locally on `localhost:3000`, you should see the following the error on the console on Chrome dev tools when submiting the form:
+If you redeploy your cloud function after changing the `cors` config, and you run your app locally on `localhost:3000`, you should see the following error on the console on your browser dev tools when submiting the form:
 
 ````bash
 Access to fetch at 'https://us-central1-nodemailer-form-8fdf0.cloudfunctions.net/sendEmail' from origin 'http://localhost:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
 ````
 
-If you filll in the form form your deployed app URL, you shouldn't see any error related to CORS. This would prove that the `cors` config change was done successfully.
+But, if you filll in the form from your deployed app URL, you shouldn't see any error related to CORS. This would prove that the `cors` config change was successfully done.
 
 
 
 **That was all!** It was a long tutorial, but now, you can feel more confident and apply this for a contact form in your next project! 
 
-**Happy coding and have fun!**
+**Happy coding!**
 
