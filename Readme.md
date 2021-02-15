@@ -446,7 +446,7 @@ export default App;
 
 ````
 
-The above code has a dummy implementation of cloud function called `fakeCloudFunction` , using a function with a `Promise` and a `setTimeout()`, but it's gonna be replaced in the comming sections with a real cloud function that actually sends and email with the data we provide in the form.
+The above code has a dummy implementation of cloud function called `fakeCloudFunction`, using a function with a `Promise` and a `setTimeout()`, but it's gonna be replaced in the comming sections with a real cloud function that actually sends and email with the data we provide in the form.
 
 If you feel overwelmed by the length and complexity of the `App.js`  component containing the form, take a look a this Academind course: [React - The Complete Guide (incl Hooks, React Router, Redux)](https://pro.academind.com/p/react-the-complete-guide-incl-hooks-react-router-redux) and then you'll feel at home reading the code again. The form code was copied from there, and it's explained there step by step.
 
