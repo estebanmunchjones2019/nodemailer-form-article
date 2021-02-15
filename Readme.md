@@ -2,11 +2,11 @@
 
 Do you need to implement a **contact form in a React** app but **don't want create a back-end app to send an email?** Let's learn how to use a **serverless approach** with **[Cloud functions on Firebase](https://firebase.google.com/docs/functions)**, and an email service called **[Nodemailer](https://nodemailer.com/about/)** to make this task super easy! 
 
-As a bonus, you'll get a React **full working form** with **validation**, with the awesome style of **[Material UI](https://material-ui.com/)**. Check out the form here 👉 [Open live app](https://nodemailer-form-8fdf0.web.app/).
+As a bonus, you'll get a React **full working form** with **validation**, with the awesome style of **[Material UI](https://material-ui.com/)** components. 
 
-The GitHub repo of the app is [here].
+Check out the form functionality here 👉 [Open live app](https://nodemailer-form-8fdf0.web.app/). 
 
-
+The GitHub repo of the form and the cloud function is here 👉 [Open GitHub repo](https://github.com/estebanmunchjones2019/nodemailer-form-app)
 
 👉 Special thanks to [Sebastián Gallardo](https://www.linkedin.com/in/sebastian-gallardo-3aaba12b/) who wrote the cloud function of this article.
 
@@ -14,9 +14,25 @@ The GitHub repo of the app is [here].
 
 Table of contents:
 
-[Creating the contact form]
+* [Creating the contact form](#creating-the-contact-form)
 
+* [Writing a cloud function for Firebase](#writing-a-cloud-function-for-firebase)
+  * [What are they?](#what-are-they)
+  * [Cloud function setup time!](#cloud-function-setup-time)
+  * [Let's finally write the cloud function](#lets-finally-write-the-cloud-function)
 
+* [Testing the cloud function running locally](#testing-the-cloud-function-running-locally)
+  * [Starting a local emulator](#starting-a-local-emulator)
+  * [Using Postman](#using-postman)
+* [Deploying the cloud function](#deploying-the-cloud-function)
+  * [Upgrading to a Blaze plan](#upgrading-to-a-blaze-plan)
+  * [Let's finally deploy it!](#lets-finally-deploy-it)
+
+* [Testing the deployed function on postman](#testing-the-deployed-function-on-postman)
+* [Calling the cloud function from the React app](#calling-the-cloud-function-from-the-react-app)
+  * [Registering the app on Firebase](#registering-the-app-on-firebase)
+  * [Adding the Firebase SDK](#adding-the-firebase-sdk)
+* [Testing the deployed function from inside the React App](#testing-the-deployed-function-from-inside-the-react-app)
 
 
 
@@ -662,13 +678,13 @@ So, let's write and export the cloud function inside `functions/index.js`:
 const functions = require('firebase-functions');
 const nodemailer = require('nodemailer');
 
-//when this cloud function is already deployed, change the origin to 'https://your-deployed-app-origin
+//when this cloud function is already deployed, change the origin to 'https://your-deployed-app-url
 const cors = require('cors')({origin: true});
 
 //create and config transporter
 let transporter = nodemailer.createTransport({
     host: "your host",
-    port: your port number,
+    port: your-port-number,
     secure: true, // true for 465, false for other ports
     auth: {
         user: 'your@email',
@@ -786,6 +802,8 @@ It seems that the cloud function sent the email successfully. Now, go to your em
 
 
 
+
+
 **Excellent!** you have successfully tested your cloud function running locally.
 
 Now, it's time to deploy it to the cloud!
@@ -878,7 +896,7 @@ The first step towards adding the SDK is registering an app and copy the `fireba
 
 
 
-## Adding the Firebase SDK
+#### Adding the Firebase SDK
 
 We're gonna add the Firebase SDK via npm to our project. 
 
