@@ -1,12 +1,14 @@
-# React contact form with Nodemailer and cloud functions
+# Sending an email with React and cloud functions
 
-Do you need to implement a **contact form in a React** app but **don't want create a back-end app to send an email?** Let's learn how to use a **serverless approach** with **[Cloud functions on Firebase](https://firebase.google.com/docs/functions)**, and an email service called **[Nodemailer](https://nodemailer.com/about/)** to make this task super easy! 
+Do you need to implement a **contact form** in your app but **don't want create a back-end app to send an email?**
 
-As a bonus, you'll get a React **full working form** with **validation**, with the awesome style of **[Material UI](https://material-ui.com/)** components. 
+Let's learn how to use a **serverless approach** with **[Cloud functions on Firebase](https://firebase.google.com/docs/functions)**, and an email service called **[Nodemailer](https://nodemailer.com/about/)** to make this task super easy! 
 
-Check out the form functionality here 👉 [Open live app](https://nodemailer-form-8fdf0.web.app/). 
+You'll get the code of a **fully working React form** with **validation**, with the awesome style of **[Material UI](https://material-ui.com/)** components, and the code of the **cloud function**, that you can use in your projects!!
 
-The GitHub repo of the form and the cloud function is here 👉 [Open GitHub repo](https://github.com/estebanmunchjones2019/nodemailer-form-app)
+Check out the React form functionality here 👉 [Open live app](https://nodemailer-form-8fdf0.web.app/). 
+
+The GitHub repo of the React form and the cloud function is here 👉 [Open GitHub repo](https://github.com/estebanmunchjones2019/nodemailer-form-app)
 
 👉 Special thanks to [Sebastián Gallardo](https://www.linkedin.com/in/sebastian-gallardo-3aaba12b/) who wrote the cloud function of this article.
 
@@ -15,9 +17,14 @@ The GitHub repo of the form and the cloud function is here 👉 [Open GitHub rep
 Table of contents:
 
 * [Creating the contact form](#creating-the-contact-form)
+  * [Front-end and back-end roles](#front-end-and-back-end-roles)
+  * [Let's get started!](#lets-get-started)
 
 * [Writing a cloud function for Firebase](#writing-a-cloud-function-for-firebase)
-  * [What are they?](#what-are-they)
+
+  * [Pay for what you use](#pay-for-what-you-use)
+
+  * [What is *Cloud Functions for Firebase*](#what-is-cloud-functions-for-firebase)
   * [Cloud function setup time!](#cloud-function-setup-time)
   * [Let's finally write the cloud function](#lets-finally-write-the-cloud-function)
 
@@ -36,23 +43,33 @@ Table of contents:
 
 
 
-**Note: if you wanna deploy a cloud function to the cloud, you'll need a credit card, altough you're not gonna be charged unless you invoke it more than 2 million times a month**
+**Note: if you wanna deploy a cloud function to the cloud, you'll need a credit card, altough you're not gonna be charged unless you invoke it more than 2 million times a month.**
 
 
 
 ## Creating the contact form:
 
+#### Front-end and back-end roles
+
+The role of the React form is to gather information that users enter and then send that to back-end code that actually sends an email, which is gonna be a cloud function in this case.
+
+But, why can't we just send an email from the client side (directly from the React app)? Because the credentials of the email provider can't be stored in the React app, where users can access its code by inspecting it.
+
+#### Let's get started!
+
 In this section we're gonna create a contact form with React, with the following features:
 
--Material UI components, to make it look good.
+-**Material UI** components, to make it look good.
 
--Validation, to provide a better UX. The form can only be submitted if all the fields are not empty and the email address has the appropriate shape.
+-**Validation**, to provide a better UX. The form can only be submitted if all the fields are not empty and the email address has the appropriate shape.
 
--Spinner, to show that something is on the way.
+-A **Spinner**, to show that something is on the way.
 
--Snackbars, to inform the user the result of an action.
+-**Snackbars**, to inform the user the result of an action.
 
+This is how the form looks like:
 
+![](./images/form.png)
 
 So, let's get started and start building it:
 
@@ -488,7 +505,17 @@ After doing the above change, you should still be able to click the `Send` butto
 
 ## Writing a cloud function for Firebase
 
-#### What are they?
+#### Pay for what you use
+
+Now it's time to focus on the back-end code that sends the email. 
+
+Usually, a back-end app is created to handle this task, that could be built with Express running on Node, for example, that then needs to be deployed to a server, which is a machine or virtual machine that runs 24/7. 
+
+The bill of this server stills needs to be paid even when the back-end app is not used at all.
+
+**This problem of paying for things we don't use is solved by cloud functions**, which is back-end code that runs on the cloud, and we pay for what we use, in a **pay as you go scheme**.
+
+#### What is *Cloud Functions for Firebase*?
 
 **Cloud Functions for Firebase** is a **serverless framework** that lets you automatically run backend code in response to events triggered by Firebase features and HTTPS requests. 
 
