@@ -515,6 +515,8 @@ The bill of this server stills needs to be paid even when the back-end app is no
 
 **This problem of paying for things we don't use is solved by cloud functions**, which is back-end code that runs on the cloud, and we pay for what we use, in a **pay as you go scheme**.
 
+There are more problems cloud functions solve and you can find them on this [Academind Youtube video](https://www.youtube.com/watch?v=qcECaRgU4uI&list=PLNP97e8dohntx7GnS2TbXUY_aig0iJceH).
+
 #### What is *Cloud Functions for Firebase*?
 
 **Cloud Functions for Firebase** is a **serverless framework** that lets you automatically run backend code in response to events triggered by Firebase features and HTTPS requests. 
